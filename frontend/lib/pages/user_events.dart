@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_service.dart';
 import '../components/drawer.dart';
+import '../components/admindrawer.dart';
 import './event.dart';
 import './eventsearch.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserEventsPage extends StatefulWidget {
   const UserEventsPage({super.key});
@@ -18,13 +20,24 @@ class _UserEventsPageState extends State<UserEventsPage> {
   List<Event> _events = [];
   bool _isLoading = false;
   String _error = "";
+  late bool _isAdmin;
 
   final apiService = ApiService('http://192.168.1.45:8080');
 
   @override
   void initState() {
     super.initState();
+    _loadAdminStatus();
     loadEvents();
+  }
+
+  // Load the admin status from SharedPreferences
+  Future<void> _loadAdminStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isAdmin =
+          prefs.getBool('isAdmin') ?? false; // Default to false if not found
+    });
   }
 
   // Method to call the API service (use try/catch to catch the error and capture it in the string)
@@ -91,7 +104,7 @@ class _UserEventsPageState extends State<UserEventsPage> {
           ),
         ],
       ),
-      drawer: AppDrawer(), // Drawer with navigation options
+      drawer: _isAdmin ? AdminDrawer() : AppDrawer(),
       body: Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child:

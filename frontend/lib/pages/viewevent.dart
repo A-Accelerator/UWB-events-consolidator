@@ -33,8 +33,8 @@ class _EventPageStaticState extends State<EventPageStatic> {
 
   Future<Map<String, dynamic>> fetchEventDetails() async {
     print({widget.eventId});
-    final url =
-        Uri.parse('http://192.168.1.45:8080/event/byId/${widget.eventId}');
+
+    final url = Uri.parse('http://0.0.0.0:8080/event/byId/${widget.eventId}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -96,7 +96,8 @@ class _EventPageStaticState extends State<EventPageStatic> {
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: Colors.black, // Specify the border color here
+                              color:
+                                  Colors.black, // Specify the border color here
                               width: 2, // Specify the border width here
                             ),
                           ),
@@ -135,13 +136,12 @@ class _EventPageStaticState extends State<EventPageStatic> {
                   child: Text(
                     "Cick to add event!",
                     style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Inter",
-                        ),
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Inter",
+                    ),
                   ),
-                
                 ),
                 Positioned(
                   bottom: 16.0,
@@ -162,15 +162,19 @@ class _EventPageStaticState extends State<EventPageStatic> {
       ),
     );
   }
+
   void sendPostRequest() async {
-    final url = Uri.parse('http://192.168.1.45:8080/user/addUserToEvent/$_userId/${widget.eventId}');
+    final url = Uri.parse(
+        'http://0.0.0.0:8080/user/addUserToEvent/$_userId/${widget.eventId}');
+
     try {
       final response = await http.post(
         url,
       );
       if (response.statusCode == 200) {
       } else {
-        print('Failed to send post request. Status code: ${response.statusCode}');
+        print(
+            'Failed to send post request. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error sending post request: $e');

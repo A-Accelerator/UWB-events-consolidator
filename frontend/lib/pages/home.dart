@@ -14,6 +14,7 @@ import './eventsearch.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:frontend/pages/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Async function that parses and filters JSON objects
 Future<List<Event>> _fetchEvents(String jsonString) async {
@@ -39,16 +40,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _events = [];
-
+  late bool _isAdmin;
 
   @override
   void initState() {
     super.initState();
+    _loadAdminStatus();
     fetchHomeEvents();
   }
 
+  // Load the admin status from SharedPreferences
+  Future<void> _loadAdminStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isAdmin =
+          prefs.getBool('isAdmin') ?? false; // Default to false if not found
+    });
+  }
+
   Future<void> fetchHomeEvents() async {
-    final url = Uri.parse('http://192.168.1.45:8080/event/homeEvents');
+
+    final url = Uri.parse('http://0.0.0.0:8080/event/homeEvents');
 
     try {
       final response = await http.get(url);
@@ -79,7 +91,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime today = DateTime.now();;
+    DateTime today = DateTime.now();
+    ;
 
     return Scaffold(
       appBar: AppBar(
@@ -115,7 +128,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      drawer: widget.isAdmin ? AdminDrawer() : AppDrawer(),
+      drawer: _isAdmin ? AdminDrawer() : AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -135,19 +148,18 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-
             ),
             // Featured Events displayed below
 
-              Expanded(
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: _events.take(2).map((event) {
-                    return _buildEventCard(context, event['eventName'],
-                        event['image'], event['id']);
-                  }).toList(),
-                ),
+            Expanded(
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: _events.take(2).map((event) {
+                  return _buildEventCard(
+                      context, event['eventName'], event['image'], event['id']);
+                }).toList(),
               ),
+            ),
             Center(
               child: Padding(
                 padding: EdgeInsets.only(top: 10),
@@ -191,7 +203,6 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-
           ],
         ),
       ),
@@ -257,5 +268,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/drawer.dart';
+import '../components/admindrawer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:frontend/api_service.dart'; // Import your ApiService
 import './event.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Function to fetch events from the API and return them as a map of DateTime to a list of events.
 Future<Map<DateTime, List<Event>>> _fetchEvents() async {
@@ -58,10 +60,12 @@ class _CalendarPageState extends State<CalendarPage> {
   late DateTime _focusedDay; // Currently focused day
   late DateTime _selectedDay; // Currently selected day
   Map<DateTime, List<Event>> _events = {}; // Map of events to display
+  late bool _isAdmin;
 
   @override
   void initState() {
     super.initState();
+    _loadAdminStatus();
     final now = DateTime.now(); // Get current date and time
     _focusedDay = DateTime(
         now.year, now.month, now.day); // Set initial focused day to today
@@ -69,6 +73,15 @@ class _CalendarPageState extends State<CalendarPage> {
     _calendarFormat =
         CalendarFormat.month; // Set initial calendar format to month
     _fetchAndSetEvents(); // Fetch and set events on initialization
+  }
+
+  // Load the admin status from SharedPreferences
+  Future<void> _loadAdminStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isAdmin =
+          prefs.getBool('isAdmin') ?? false; // Default to false if not found
+    });
   }
 
   // Fetch events and update the state
@@ -96,7 +109,7 @@ class _CalendarPageState extends State<CalendarPage> {
           },
         ),
       ),
-      drawer: AppDrawer(), // Custom drawer widget
+      drawer: _isAdmin ? AdminDrawer() : AppDrawer(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
