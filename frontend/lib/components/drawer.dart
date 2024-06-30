@@ -7,7 +7,8 @@ import 'package:frontend/pages/user_events.dart';
 // This widget defines the drawer menu that is displayed when the user taps on the hamburger icon.
 // The drawer contains navigation links to the Home, Calendar, and My Events pages.
 class AppDrawer extends StatelessWidget {
-  AppDrawer({super.key});
+  final int userId;
+  AppDrawer({super.key, required int this.userId});
 
   // Creating a common style for the ListTile titles
   TextStyle get listTileStyle => const TextStyle(
@@ -30,6 +31,7 @@ class AppDrawer extends StatelessWidget {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => HomePage(
                         isAdmin: false,
+                        userId: userId,
                       )));
             },
           ),
@@ -39,7 +41,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               // Navigate to the Calendar page on tap
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const CalendarPage()));
+                  builder: (context) =>  CalendarPage(userId: userId,)));
             },
           ),
           // ListTile for moving to the My Events page
@@ -48,7 +50,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               // Navigate to the My Events page when tapped
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => UserEventsPage()));
+                  MaterialPageRoute(builder: (context) => UserEventsPage(userId: userId,)));
             },
           ),
           ListTile(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:frontend/api_service.dart'; // Import your ApiService
 import 'package:frontend/pages/eventcreate.dart';
 import 'package:intl/intl.dart'; // For date formatting
@@ -8,7 +9,8 @@ import 'admin_event_delete.dart';
 import 'home.dart'; // Import the AdminHomePage
 
 class AdminConsolePage extends StatefulWidget {
-  const AdminConsolePage({Key? key}) : super(key: key);
+  final int userId;
+  AdminConsolePage({Key? key, required this.userId, required}) : super(key: key);
 
   @override
   _AdminConsolePageState createState() => _AdminConsolePageState();
@@ -21,7 +23,7 @@ class _AdminConsolePageState extends State<AdminConsolePage> {
   List<Event> _events = [];
 
   // Initialize the ApiService with the base URL
-  final ApiService apiService = ApiService('http://192.168.1.45:8080');
+  final ApiService apiService = ApiService('http://192.168.86.234:8080');
 
   @override
   void initState() {
@@ -59,7 +61,7 @@ class _AdminConsolePageState extends State<AdminConsolePage> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomePage(isAdmin: false)),
+              MaterialPageRoute(builder: (context) => HomePage(isAdmin: false, userId: widget.userId)),
             );
           },
         ),
@@ -106,7 +108,7 @@ class _AdminConsolePageState extends State<AdminConsolePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EventEdit()),
+                        MaterialPageRoute(builder: (context) => EventEdit(userId: widget.userId)),
                       ).then((_) {
                         setState(() {
                           _showButtonsOnPage = false;

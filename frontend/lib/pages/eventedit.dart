@@ -6,16 +6,17 @@ import 'package:frontend/pages/eventcreate.dart';
 import 'package:http/http.dart' as http;
 
 class EventEdit extends StatefulWidget {
-  const EventEdit({Key? key}) : super(key: key);
+  final int userId;
+  EventEdit({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<EventEdit> createState() => _EventEditState();
 }
 
 class _EventEditState extends State<EventEdit> {
+  final int userId = 5;
   late int _eventID;
   List<Map<String, dynamic>> _events = [];
-  final int _userId = 6;
 
   @override
   void initState() {
@@ -91,6 +92,7 @@ class _EventEditState extends State<EventEdit> {
                                 builder: (context) => AdminEventEdit(
                                   eventName: eventName,
                                   eventID: eventId,
+                                  userId: userId,
                                 ),
                               ),
                             );
@@ -124,7 +126,7 @@ class _EventEditState extends State<EventEdit> {
   }
 
   Future<void> fetchAllEvents() async {
-    final url = Uri.parse('http://192.168.1.45:8080/user/userEvents/$_userId');
+    final url = Uri.parse('http://192.168.86.234:8080/event/allEvents');
     try {
       final response = await http.get(url);
 

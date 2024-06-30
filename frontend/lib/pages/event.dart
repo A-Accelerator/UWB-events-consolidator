@@ -43,12 +43,13 @@ class EventPage extends StatefulWidget {
   final String title;
   final String image;
   final String navTo;
+  final int userId;
 
   EventPage(
       {super.key,
       required this.title,
       required this.image,
-      required this.navTo});
+      required this.navTo, required this.userId});
 
   @override
   _EventPageState createState() => _EventPageState();
@@ -61,7 +62,7 @@ class _EventPageState extends State<EventPage> {
   bool _isLoading = false;
   String _error = "";
 
-  final apiService = ApiService('http://192.168.1.45:8080');
+  final apiService = ApiService('http://192.168.86.234:8080');
 
   @override
   void initState() {
@@ -119,13 +120,14 @@ class _EventPageState extends State<EventPage> {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => HomePage(
                             isAdmin: false,
+                            userId: widget.userId,
                           )));
                 } else if (widget.navTo == 'userEvents') {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => UserEventsPage()));
+                      builder: (context) => UserEventsPage(userId: widget.userId)));
                 } else if (widget.navTo == 'calendar') {
                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => CalendarPage()));
+                      MaterialPageRoute(builder: (context) => CalendarPage(userId: widget.userId)));
                 }
               },
             );

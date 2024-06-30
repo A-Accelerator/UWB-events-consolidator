@@ -8,8 +8,9 @@ import 'package:http/http.dart' as http;
 class AdminEventEdit extends StatefulWidget {
   String eventName;
   final int eventID;
+  final int userId;
 
-  AdminEventEdit({Key? key, required this.eventName, required this.eventID})
+  AdminEventEdit({Key? key, required this.eventName, required this.eventID, required int this.userId})
       : super(key: key);
 
   @override

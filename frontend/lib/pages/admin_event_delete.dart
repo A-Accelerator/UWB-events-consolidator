@@ -19,7 +19,7 @@ class _AdminEventDeletePageState extends State<AdminEventDeletePage> {
   List<Event> _events = [];
 
   // Initialize the ApiService with the base URL
-  final ApiService apiService = ApiService('http://192.168.1.45:8080');
+  final ApiService apiService = ApiService('http://192.168.86.234:8080');
 
   @override
   void initState() {

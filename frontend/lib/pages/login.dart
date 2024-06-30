@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
       // Navigate to the HomePage, passing the isAdmin status
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => HomePage(isAdmin: isAdmin),
+          builder: (context) => HomePage(isAdmin: isAdmin,userId: userId,),
         ),
       );
     } else if (loginResult?['status'] == 'invalid_password') {
@@ -110,12 +110,9 @@ class _LoginPageState extends State<LoginPage> {
 
     // Handle the result of the registration attempt
     if (registerResult == 'success') {
-      // If registration is successful, navigate to the HomePage
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => HomePage(isAdmin: false),
-        ),
-      );
+      _login();
+      // If registration is successful, Log in
+    
     } else if (registerResult == 'username_exists') {
       // If the username already exists, show a SnackBar with a message
       ScaffoldMessenger.of(context).showSnackBar(

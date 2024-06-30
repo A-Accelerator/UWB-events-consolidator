@@ -31,7 +31,8 @@ Future<List<Event>> _fetchEvents(String jsonString) async {
 // Lines 135 and 147 needs to be updated when the database is updated with URLs rather than image links
 class HomePage extends StatefulWidget {
   final bool isAdmin;
-  HomePage({Key? key, required this.isAdmin}) : super(key: key);
+  final int userId;
+  HomePage({Key? key, required this.isAdmin, required this.userId}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -48,7 +49,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchHomeEvents() async {
-    final url = Uri.parse('http://192.168.1.45:8080/event/homeEvents');
+    final url = Uri.parse('http://192.168.86.234:8080/event/homeEvents');
 
     try {
       final response = await http.get(url);
@@ -108,14 +109,14 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        EventSearchPage()), // Navigate to EventSearchPage
+                        EventSearchPage(userID: widget.userId,)), // Navigate to EventSearchPage
               );
             },
             color: Color(0xFF4B2E83),
           ),
         ],
       ),
-      drawer: widget.isAdmin ? AdminDrawer() : AppDrawer(),
+      drawer: widget.isAdmin ? AdminDrawer(userId: widget.userId,) : AppDrawer(userId: widget.userId,),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -184,6 +185,8 @@ class _HomePageState extends State<HomePage> {
                                 MaterialPageRoute(
                                     builder: (context) => EventPageStatic(
                                           eventId: event["id"],
+                                          userId: widget.userId
+                                      
                                         )), // Navigate to EventEdit
                               );
                             },
@@ -207,7 +210,8 @@ class _HomePageState extends State<HomePage> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => EventPageStatic(
-                eventId: eventId, // Pass the event ID to the EventPage
+                eventId: eventId,
+                userId: widget.userId // Pass the event ID to the EventPage
               ),
             ),
           );

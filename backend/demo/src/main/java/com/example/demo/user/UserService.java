@@ -80,7 +80,7 @@ public class UserService {
         Optional<User> userOpt = userRepository.findById(userId);
         Optional<Event> eventOpt = eventRepository.findById(eventId);
         if (userOpt.isPresent() && eventOpt.isPresent()) {
-            if(eventOpt.get().getSignedUpUsers().contains(eventOpt.get())) {
+            if(eventOpt.get().getSignedUpUsers().contains(userOpt.get())) {
                 throw new IllegalArgumentException("User already has an event");
             }
             User user = userOpt.get();

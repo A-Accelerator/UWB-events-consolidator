@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 
 class EventPageStatic extends StatefulWidget {
   final int eventId;
+  final int userId;
 
-  EventPageStatic({required this.eventId});
+  EventPageStatic({required int this.eventId, required int this.userId});
 
   @override
   _EventPageStaticState createState() => _EventPageStaticState();
@@ -21,7 +22,6 @@ class _EventPageStaticState extends State<EventPageStatic> {
   String _endDate = "2024-06-15";
   String _startTime = "08:30:00";
   String _endTime = "12:00:00";
-  int _userId = 6;
 
   late Future<Map<String, dynamic>> _eventDetails;
 
@@ -34,7 +34,7 @@ class _EventPageStaticState extends State<EventPageStatic> {
   Future<Map<String, dynamic>> fetchEventDetails() async {
     print({widget.eventId});
     final url =
-        Uri.parse('http://192.168.1.45:8080/event/byId/${widget.eventId}');
+        Uri.parse('http://192.168.86.234:8080/event/byId/${widget.eventId}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -163,7 +163,8 @@ class _EventPageStaticState extends State<EventPageStatic> {
     );
   }
   void sendPostRequest() async {
-    final url = Uri.parse('http://192.168.1.45:8080/user/addUserToEvent/$_userId/${widget.eventId}');
+    final url = Uri.parse('http://192.168.86.234:8080/user/addUserToEvent/${widget.userId}/${widget.eventId}');
+    print('${widget.userId}/${widget.eventId}');
     try {
       final response = await http.post(
         url,

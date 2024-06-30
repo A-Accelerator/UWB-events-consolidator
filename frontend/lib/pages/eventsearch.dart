@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:frontend/api_service.dart'; // Import your ApiService
+import 'package:frontend/pages/viewevent.dart';
 import 'dart:convert';
 import './event.dart'; // Import your Event model here
 
 // This allows the user to search for events from a predefined list and navigate to the event details page.
 class EventSearchPage extends StatefulWidget {
+  final int userID;
+
+  EventSearchPage({required this.userID});
+
   @override
   _EventSearchPageState createState() => _EventSearchPageState();
 }
@@ -12,8 +18,7 @@ class EventSearchPage extends StatefulWidget {
 class _EventSearchPageState extends State<EventSearchPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Event> _allEvents = []; // List to store all events from the API
-  List<Event> _filteredEvents =
-      []; // List to store filtered events based on the search query
+  List<Event> _filteredEvents = []; // List to store filtered events based on the search query
 
   @override
   void initState() {
@@ -23,18 +28,14 @@ class _EventSearchPageState extends State<EventSearchPage> {
 
   // Method to fetch events from the API and set the state
   Future<void> _fetchAndSetEvents() async {
-    final apiService = ApiService(
-        'http://192.168.1.45:8080'); // Initialize ApiService with base URL
+    final apiService = ApiService('http://192.168.86.234:8080'); // Initialize ApiService with base URL
     try {
-      final data =
-          await apiService.getAllEvents(); // Fetch all events from the API
-      final List<dynamic> jsonData =
-          jsonDecode(data); // Decode JSON data from the response
+      final data = await apiService.getAllEvents(); // Fetch all events from the API
+      final List<dynamic> jsonData = jsonDecode(data); // Decode JSON data from the response
       List<Event> events = []; // Initialize an empty list to store events
       for (var json in jsonData) {
         try {
-          events.add(Event.fromJson(
-              json)); // Parse each event JSON into an Event object and add to the list
+          events.add(Event.fromJson(json)); // Parse each event JSON into an Event object and add to the list
         } catch (e) {
           print('Error parsing event: $e'); // Error handling for JSON parsing
         }
@@ -51,8 +52,7 @@ class _EventSearchPageState extends State<EventSearchPage> {
   // Method to filter events based on the search query
   void _filterEvents(String query) {
     List<Event> filtered = _allEvents
-        .where((event) =>
-            event.eventName.toLowerCase().contains(query.toLowerCase()))
+        .where((event) => event.eventName.toLowerCase().contains(query.toLowerCase()))
         .toList();
     setState(() {
       _filteredEvents = filtered; // Update the filtered events list
@@ -77,15 +77,13 @@ class _EventSearchPageState extends State<EventSearchPage> {
                 labelText: 'Search',
                 prefixIcon: Icon(Icons.search),
               ),
-              onChanged:
-                  _filterEvents, // Call the _filterEvents method to update the filtered events upon a change in the search field
+              onChanged: _filterEvents, // Call the _filterEvents method to update the filtered events upon a change in the search field
             ),
             Expanded(
               child: ListView.builder(
                 itemCount: _filteredEvents.length, // Number of filtered events
                 itemBuilder: (context, index) {
-                  final event =
-                      _filteredEvents[index]; // Event at the current index
+                  final event = _filteredEvents[index]; // Event at the current index
                   return ListTile(
                     title: Text(event.eventName),
                     onTap: () {
@@ -93,11 +91,9 @@ class _EventSearchPageState extends State<EventSearchPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EventPage(
-                            title: event.eventName,
-                            image: event.image ??
-                                '', // Pass the event image to EventPage
-                            navTo: 'home',
+                          builder: (context) => EventPageStatic(
+                            userId: widget.userID,
+                            eventId: event.id,
                           ),
                         ),
                       );
