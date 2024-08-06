@@ -11,7 +11,6 @@ import '../components/drawer.dart';
 import '../components/admindrawer.dart';
 import './event.dart';
 import './eventsearch.dart';
-import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:frontend/pages/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +28,6 @@ Future<List<Event>> _fetchEvents(String jsonString) async {
 }
 
 // HomePage represents the main page of the application that has the header, a search button, and a list of featured events.
-// Lines 135 and 147 needs to be updated when the database is updated with URLs rather than image links
 class HomePage extends StatefulWidget {
   final bool isAdmin;
   final int userId;
@@ -100,7 +98,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     DateTime today = DateTime.now();
-    ;
 
     return Scaffold(
       appBar: AppBar(
@@ -129,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        EventSearchPage(userID: widget.userId,)), // Navigate to EventSearchPage
+                        EventSearchPage(userID: widget.userId)), // Navigate to EventSearchPage
               );
             },
             color: Color(0xFF4B2E83),
@@ -189,39 +186,34 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: _events.length > 2 ? _events.length - 2 : 0,
-                      itemBuilder: (context, index) {
-                        final event = _events[index + 2];
-                        return Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton(
-                              child: Text(
-                                '${event['startDate']}: ${event['eventName']}',
-                                textAlign: TextAlign.left,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) => EventPageStatic(
-                                            eventId: event[
-                                                "id"], // Navigate to EventEdit
-                                             userId: widget.userId
-                                          )),
-                                );
-                              },
-                            ),
+                    child: _events.length > 2
+                        ? ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _events.skip(2).take(3).map((event) {
+                              return _buildEventCard(
+                                  context,
+                                  event['eventName'],
+                                  event['image'],
+                                  event['id']);
+                            }).toList()
+                              ..add(_events.length > 5
+                                  ? IconButton(
+                                      icon: Icon(Icons.arrow_forward),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => EventListPage(
+                                                  userId: widget.userId,
+                                                  events: _events.skip(2).toList())),
+                                        );
+                                      },
+                                    )
+                                  : Container()),
+                          )
+                        : Center(
+                            child: Text('No other events available'),
                           ),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -285,6 +277,110 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// EventListPage class to handle the display of the remaining events
+class EventListPage extends StatelessWidget {
+  final int userId;
+  final List<Map<String, dynamic>> events;
+
+  EventListPage({required this.userId, required this.events});
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('M/d/yyyy');
+    final timeFormat = DateFormat('h:mma');
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('All Events'),
+      ),
+      body: ListView.builder(
+        itemCount: events.length,
+        itemBuilder: (context, index) {
+          final event = events[index];
+          final eventDate = dateFormat.format(DateTime.parse(event['startDate']));
+          final formattedTime = '${timeFormat.format(DateTime.parse(event['startDate'])).toLowerCase()} - ${timeFormat.format(DateTime.parse(event['endDate'])).toLowerCase()}';
+          
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => EventPageStatic(
+                    eventId: event['id'],
+                    userId: userId, // Pass the event ID to the EventPage
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                        image: NetworkImage(event['image']),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          event['eventName'],
+                          style: TextStyle(
+                            color: Color(0xFF4B2E83),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          eventDate,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          formattedTime,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
