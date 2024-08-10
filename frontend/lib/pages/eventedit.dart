@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/adminedit.dart';
 import 'package:frontend/pages/eventcreate.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart'; // For date formatting
 
 class EventEdit extends StatefulWidget {
   final int userId;
@@ -29,98 +29,53 @@ class _EventEditState extends State<EventEdit> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Admin Console"),
-        centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
+        padding: const EdgeInsets.all(20.0),
+        child: ListView.builder(
+          itemCount: _events.length,
+          itemBuilder: (context, index) {
+            final event = _events[index];
+            final startDate = DateFormat.MMMd().format(DateTime.parse(event['startDate']));
+            final eventName = event['eventName'];
+            final eventId = event['id'];
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                  Expanded(
                     child: Text(
-                      'Events:',
-                      textAlign: TextAlign.center,
+                      '$startDate: $eventName',
+                      textAlign: TextAlign.left,
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w400,
                         color: Colors.black,
                         fontSize: 17,
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 550,
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: _events.length,
-                itemBuilder: (context, index) {
-                  final event = _events[index];
-                  final startDate = event['startDate'];
-                  final eventName = event['eventName'];
-                  final eventId = event['id'];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 15.0),
-                            child: Text(
-                              '$startDate $eventName',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                                fontSize: 17,
-                              ),
-                            ),
+                  IconButton(
+                    onPressed: () {
+                      _eventID = eventId;
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => AdminEventEdit(
+                            eventName: eventName,
+                            eventID: eventId,
+                            userId: userId,
                           ),
                         ),
-                        FloatingActionButton(
-                          onPressed: () {
-                            _eventID = eventId;
-
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => AdminEventEdit(
-                                  eventName: eventName,
-                                  eventID: eventId,
-                                  userId: userId,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Icon(Icons.check_box_outlined),
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          mini: true,
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                      );
+                    },
+                    icon: Icon(Icons.check_box_outlined),
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  ),
+                ],
               ),
-            ),
-          ],
+            );
+          },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (context) =>
-                    AdminEventCreate()), // Navigate to EventEdit
-          );
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Color(0xFF4B2E83),
       ),
     );
   }

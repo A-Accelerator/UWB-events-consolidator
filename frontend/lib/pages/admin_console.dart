@@ -88,8 +88,22 @@ class _AdminConsolePageState extends State<AdminConsolePage> {
               itemBuilder: (context, index) {
                 final event = _events[index];
                 return ListTile(
-                  title: Text(event.eventName),
-                  subtitle: Text(event.description),
+                  title: Text(
+                    event.eventName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                      fontSize: 17,
+                    ),
+                  ),
+                  subtitle: Text(
+                    event.description,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      color: Colors.black54,
+                      fontSize: 15,
+                    ),
+                  ),
                   onTap: () {
                     // You can navigate to a detailed event page if needed
                   },

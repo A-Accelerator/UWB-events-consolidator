@@ -6,8 +6,6 @@ import 'eventedit.dart';
 import 'admin_event_delete.dart';
 import 'home.dart';
 
-// Import your ApiService
-
 class AdminEventDeletePage extends StatefulWidget {
   @override
   _AdminEventDeletePageState createState() => _AdminEventDeletePageState();
@@ -64,30 +62,40 @@ class _AdminEventDeletePageState extends State<AdminEventDeletePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Console', textAlign: TextAlign.center),
+        title: Text('Admin Console'),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _error.isNotEmpty
-              ? Center(child: Text(_error))
-              : ListView.builder(
-                  itemCount: _events.length,
-                  itemBuilder: (context, index) {
-                    final event = _events[index];
-                    return ListTile(
-                      title: Text(
-                        '${DateFormat.MMMd().format(event.startDate)}: ${event.eventName}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          _deleteEvent(event.id);
-                        },
-                      ),
-                    );
-                  },
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : _error.isNotEmpty
+                ? Center(child: Text(_error))
+                : ListView.builder(
+                    itemCount: _events.length,
+                    itemBuilder: (context, index) {
+                      final event = _events[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${DateFormat.MMMd().format(event.startDate)}: ${event.eventName}',
+                                style: TextStyle(fontSize: 17),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                _deleteEvent(event.id);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+      ),
     );
   }
 }
